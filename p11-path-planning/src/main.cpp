@@ -285,16 +285,17 @@ int main() {
 				check_car_s += ((double)prev_size*0.02*check_speed);
 
         // minimum distance gaps between our car and other cars
-				int gap_ahead = 15; // m
-        int gap_behind = 15; // m
+				int gap_ahead_my_lane = 20; // m
+        int gap_ahead_oth_lane = 60; // m
+        int gap_behind = 5; // m
 
 				// determine if other car is within minimum distance gaps
 				if (car_lane == lane) {
-					car_ahead |= (check_car_s > car_s) && ((check_car_s - car_s) < gap_ahead);
+					car_ahead |= (check_car_s > car_s) && ((check_car_s - car_s) < gap_ahead_my_lane);
         } else if (lane - car_lane == 1) {
-					car_left |= ((car_s - gap_ahead) < check_car_s) && ((car_s + gap_behind) > check_car_s);
+					car_left |= ((check_car_s + gap_behind) > car_s ) && ((check_car_s - gap_ahead_oth_lane) < car_s);
 				} else if (lane - car_lane == -1) {
-					car_right |= ((car_s - gap_ahead) < check_car_s) && ((car_s + gap_behind) > check_car_s);
+					car_right |= ((check_car_s + gap_behind) > car_s ) && ((check_car_s - gap_ahead_oth_lane) < car_s);
 				}
 			}
 

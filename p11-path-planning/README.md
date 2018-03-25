@@ -1,16 +1,81 @@
-# CarND-Path-Planning-Project
-Self-Driving Car Engineer Nanodegree Program
-   
+#### Udacity Self-Driving Car Engineer Nanodegree
+
+# Term 3 / Project 11: Path Planning
+
+
+##### &nbsp;
+
+## Goal
+The goal of this project is to autonomously drive a car on a virtual highway without any traffic incidents and while providing a smooth ride for the vehicle's passengers. For example, the vehicle cannot collide with other vehicles, violate any traffic laws, or create excessive jerk on the vehicle due to erratic steering or acceleration. There's a secondary goal to maximize the vehicle's driving speed measured in miles per hour (MPH). To achieve these goals, students must build a Path Planner that is able to detect other cars and safely navigate through traffic.
+
+##### &nbsp;
+
+## Requirements & Conditions
+The speed limit is 50 MPH, but there is other traffic driving +-10 MPH of the speed limit. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when needed. Note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless switching from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop.
+
+#### Rubric Points
+1. **The car is able to drive at least 4.32 miles without incident.** Each incident case is listed below.
+1. **The car does not have collisions.** The car must not come into contact with any of the other cars on the road.
+1. **The car drives according to the speed limit.** The car doesn't drive faster than the speed limit. Also the car isn't driving much slower than speed limit unless obstructed by traffic.
+1. **Max acceleration and jerk are not exceeded.** The car does not exceed a total acceleration of 10 m/s^2 and a jerk of 10 m/s^3.
+1. **The car stays in its lane.** Except when changing lanes, the car must stay inside one of the 3 lanes on the right hand portion of the road. When changing lanes, the car can't spend more than 3 seconds outside the lanes it's changing between.
+1. **The car is able to change lanes.** The car is able to smoothly change lanes when it makes sense to do so, such as when behind a slower moving car and an adjacent lane is clear of other traffic.
+
+
+##### &nbsp;
+
+## Results
+Ultimately, I was able to get my car to navigate the highway for over **17.5 miles** and **21.5 minutes without incident**.
+
+<img src="results/best-score.png" width="40%" /></a>
+
+[Here](https://youtu.be/3QYBQGf2RrE) is a video showing the results.
+
+<a href="https://youtu.be/3QYBQGf2RrE"><img src="results/video-thumbnail.png" width="60%" /></a>
+
+##### &nbsp;
+
+## Approach
+In building a path planner, there are many different approaches with varying levels of complexity. I decided to keep my approach as simple as possible, while leveraging much of the starter code provided in the [project walkthrough.](https://youtu.be/7sI3VHFPP0w)
+
+##### &nbsp;
+
+### Data Provided
+The map of the highway is in data/highway_map.txt. Each waypoint in the list contains `[x,y,s,dx,dy]` values. `x` and `y` are the waypoint's map coordinate position, the `s` value is the distance along the road to get to that waypoint in meters, the `dx` and `dy` values define the unit normal vector pointing outward of the highway loop.
+
+The highway's waypoints loop around so the Frenet `s` value distance along the road goes from 0 to 6945.554.
+
+##### &nbsp;
+
+### Prediction
+
+
+##### &nbsp;
+
+### Behavior
+
+
+##### &nbsp;
+
+### Trajectory
+The final task is to calculate an optimal trajectory. We start by transforming the waypoints from track coordinates into the vehicle space. This will simplify the calculations in a later step, when we use the IPOPT and CPPAD packages to calculate the optimal trajectory and associated actuation commands (i.e. those which minimize error).
+
+[Here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/main.cpp#L101) is the part of my code where the waypoints are converted.
+
+##### &nbsp;
+
+### Future Improvements
+
+
+##### &nbsp;
+
+---
+
+# Project Starter Code
+In case you want to run this project yourself, below is the project starter code. This repository contains all the code needed to complete the final project for the Localization course in Udacity's Self-Driving Car Nanodegree.
+
 ### Simulator.
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2).
-
-### Goals
-In this project your goal is to safely navigate around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. You will be provided the car's localization and sensor fusion data, there is also a sparse map list of waypoints around the highway. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when possible, note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless going from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop. Also the car should not experience total acceleration over 10 m/s^2 and jerk that is greater than 10 m/s^3.
-
-#### The map of the highway is in data/highway_map.txt
-Each waypoint in the list contains  [x,y,s,dx,dy] values. x and y are the waypoint's map coordinate position, the s value is the distance along the road to get to that waypoint in meters, the dx and dy values define the unit normal vector pointing outward of the highway loop.
-
-The highway's waypoints loop around so the frenet s value, distance along the road, goes from 0 to 6945.554.
 
 ## Basic Build Instructions
 
@@ -38,13 +103,13 @@ Here is the data provided from the Simulator to the C++ Program
 #### Previous path data given to the Planner
 
 //Note: Return the previous list but with processed points removed, can be a nice tool to show how far along
-the path has processed since last time. 
+the path has processed since last time.
 
 ["previous_path_x"] The previous list of x points previously given to the simulator
 
 ["previous_path_y"] The previous list of y points previously given to the simulator
 
-#### Previous path's end s and d values 
+#### Previous path's end s and d values
 
 ["end_path_s"] The previous list's last point's frenet s value
 
@@ -52,7 +117,7 @@ the path has processed since last time.
 
 #### Sensor Fusion Data, a list of all other car's attributes on the same side of the road. (No Noise)
 
-["sensor_fusion"] A 2d vector of cars and then that car's [car's unique ID, car's x position in map coordinates, car's y position in map coordinates, car's x velocity in m/s, car's y velocity in m/s, car's s position in frenet coordinates, car's d position in frenet coordinates. 
+["sensor_fusion"] A 2d vector of cars and then that car's [car's unique ID, car's x position in map coordinates, car's y position in map coordinates, car's x velocity in m/s, car's y velocity in m/s, car's s position in frenet coordinates, car's d position in frenet coordinates.
 
 ## Details
 
@@ -82,7 +147,7 @@ A really helpful resource for doing this project and creating smooth trajectorie
   * Run either `install-mac.sh` or `install-ubuntu.sh`.
   * If you install from source, checkout to commit `e94b6e1`, i.e.
     ```
-    git clone https://github.com/uWebSockets/uWebSockets 
+    git clone https://github.com/uWebSockets/uWebSockets
     cd uWebSockets
     git checkout e94b6e1
     ```
@@ -137,4 +202,3 @@ still be compilable with cmake and make./
 
 ## How to write a README
 A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
-

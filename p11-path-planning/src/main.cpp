@@ -228,23 +228,23 @@ int main() {
           // j[1] is the data JSON object
 
         	// Main car's localization Data
-          	double car_x = j[1]["x"];
-          	double car_y = j[1]["y"];
-          	double car_s = j[1]["s"];
-          	double car_d = j[1]["d"];
-          	double car_yaw = j[1]["yaw"];
-          	double car_speed = j[1]["speed"];
+          double car_x = j[1]["x"];  // Cartesian map coordinates
+          double car_y = j[1]["y"];  // Cartesian map coordinates
+          double car_s = j[1]["s"];  // Frenet coordinate, longitudinal distance from track start 0
+          double car_d = j[1]["d"];  // Frenet coordinate, lateral distance from road median 0
+          double car_yaw = j[1]["yaw"];  // steering angle / heading
+        	double car_speed = j[1]["speed"];
 
-          	// Previous path data given to the Planner
-          	auto previous_path_x = j[1]["previous_path_x"];
-          	auto previous_path_y = j[1]["previous_path_y"];
-          	// Previous path's end s and d values
-          	double end_path_s = j[1]["end_path_s"];
-          	double end_path_d = j[1]["end_path_d"];
+        	// Previous path data given to the Planner
+        	auto previous_path_x = j[1]["previous_path_x"];
+        	auto previous_path_y = j[1]["previous_path_y"];
+        	// Previous path's end s and d values
+        	double end_path_s = j[1]["end_path_s"];
+        	double end_path_d = j[1]["end_path_d"];
 
-          	// Sensor Fusion Data, a list of all other cars on the same side of the road.
-			      // 1D vector for each car: [ id, x, y, vx, vy, s, d]
-          	auto sensor_fusion = j[1]["sensor_fusion"];
+        	// Sensor Fusion Data, a list of all other cars on the same side of the road.
+		      // 1D vector for each car: [ id, x, y, vx, vy, s, d]
+        	auto sensor_fusion = j[1]["sensor_fusion"];
 
       // Prediction: determine whether other cars are (or will be) in our way
 
@@ -252,7 +252,7 @@ int main() {
 			int prev_size = previous_path_x.size();
 
 			if (prev_size > 0) {
-				car_s = end_path_s;
+			     car_s = end_path_s;
 			}
 
 			// initialize lane identifiers for other cars
@@ -266,11 +266,11 @@ int main() {
 				int car_lane;
 
 				if (d >= 0 && d < 4) {
-					car_lane = 0;
-				} else if (d >= 4 && d < 8) {
-					car_lane = 1;
-				} else if (d >= 8 && d <= 12) {
-					car_lane = 2;
+          car_lane = 0;  // left lane
+        } else if (d >= 4 && d < 8) {
+          car_lane = 1;  // middle lane
+        } else if (d >= 8 && d <= 12) {
+          car_lane = 2;  // right lane
 				} else {
 					continue;
 				}

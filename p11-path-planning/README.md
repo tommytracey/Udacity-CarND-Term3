@@ -6,12 +6,12 @@
 ##### &nbsp;
 
 ## Goal
-The goal of this project is to autonomously drive a car on a virtual highway without any traffic incidents and while providing a smooth ride for the vehicle's passengers. For example, the vehicle cannot collide with other vehicles, violate any traffic laws, or create excessive jerk on the vehicle due to erratic steering or acceleration. There's a secondary goal to maximize the vehicle's driving speed measured in miles per hour (MPH). To achieve these goals, students must build a Path Planner that is able to detect other cars and safely navigate through traffic.
+The goal of this project is to autonomously drive a car on a virtual highway without any traffic incidents and while providing a smooth ride for the vehicle's passengers. For example, the vehicle cannot collide with other vehicles, violate any traffic laws, or create excessive jerk due to erratic steering or acceleration. There's a secondary goal to maximize the vehicle's driving speed measured in miles per hour (MPH), while not exceeding the speed limit. To achieve these goals, students must build a Path Planner that is able to detect other cars and safely navigate through traffic.
 
 ##### &nbsp;
 
 ## Requirements & Conditions
-The speed limit is 50 MPH, but there is other traffic driving +-10 MPH of the speed limit. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when needed. Note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless switching from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop.
+The speed limit is 50 MPH, but there is other traffic driving +-10 MPH of the speed limit. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when needed. Note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless switching from one lane to another. The car should be able to make one complete loop around the 6,946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop.
 
 #### Rubric Points
 1. **The car is able to drive at least 4.32 miles without incident.** Each incident case is listed below.
@@ -27,21 +27,21 @@ The speed limit is 50 MPH, but there is other traffic driving +-10 MPH of the sp
 ## Results
 Ultimately, I was able to get my car to navigate the highway for over **17.5 miles** and **21.5 minutes without incident**.
 
-<img src="results/best-score.png" width="40%" /></a>
+<img src="results/best-score.png" width="75%" /></a>
 
 [Here](https://youtu.be/3QYBQGf2RrE) is a video showing the results.
 
-<a href="https://youtu.be/3QYBQGf2RrE"><img src="results/video-thumbnail.png" width="60%" /></a>
+<a href="https://youtu.be/3QYBQGf2RrE"><img src="results/video-thumbnail.png" width="55%" /></a>
 
 ##### &nbsp;
 
 ## Approach
-In building a path planner, there are many different approaches with varying levels of complexity. I decided to keep my approach as simple as possible, while leveraging much of the starter code provided in the [project walkthrough.](https://youtu.be/7sI3VHFPP0w)
+In building a path planner, there are many possible approaches with varying levels of complexity. I decided to keep my approach as simple as possible, while leveraging much of the starter code provided in the [project walkthrough.](https://youtu.be/7sI3VHFPP0w)
 
 All of my code can be found in `main.cpp` from line [line 249](https://github.com/tommytracey/Udacity-CarND-Term3/blob/master/p11-path-planning/src/main.cpp#L249) to 436 (below the helper functions provided by Udacity). There are three main sections:
 
 1. **Prediction** &mdash; leverage our car's localization data and the sensor fusion data to detect other cars and determine their relative positions.
-2. **Behavior** &mdash; given the above predictions, determine if and when our car should change lanes so that it can safely but also efficiently navigate through traffic.
+2. **Behavior** &mdash; given the above predictions, determine if and when our car should change lanes so that it can safely but efficiently navigate through traffic.
 3. **Trajectory** &mdash; given the above predictions and behavior model, calculate our car's path and feed it to the simulator.
 
 ##### &nbsp;
@@ -71,7 +71,7 @@ auto sensor_fusion = j[1]["sensor_fusion"];
 ```
 ##### &nbsp;
 
-With this data in hand, we can now determine the relative longitudinal (`s`) and lateral (`d`) distances of our car to other cars on the road.
+With this data in hand, we can now calculate the longitudinal (`s`) and lateral (`d`) distances for other cars on the road and which lane they're in relative to ours.
 
 First we need to initialize our own lane and velocity ([line 205](https://github.com/tommytracey/Udacity-CarND-Term3/blob/master/p11-path-planning/src/main.cpp#L205)):
 
@@ -131,7 +131,7 @@ check_car_s += ((double)prev_size*0.02*check_speed);
 
 #### This is where things get interesting.
 
-Now that we have `s` and `d` for the other cars, we need to determine if any of the cars are within some minimum distance in our lane or an adjacent lane. The values you set for these distances will significantly impact how aggressively your car navigates through traffic. After several tuning iterations, I ultimately settled on the distance gap parameters below (also [line 287](https://github.com/tommytracey/Udacity-CarND-Term3/blob/master/p11-path-planning/src/main.cpp#L287)).
+Now that we have `s` and `d` for the other cars, we need to determine if any of the cars are within some minimum distance in our lane or an adjacent lane. The values you set for these distances will significantly impact how aggressively your car navigates through traffic. After several iterations, I ultimately settled on the distance gap parameters below (also [line 287](https://github.com/tommytracey/Udacity-CarND-Term3/blob/master/p11-path-planning/src/main.cpp#L287)).
 
 To summarize, the model identifies:
 * a `car_ahead` if there is a car in my lane less than 20m ahead
@@ -158,9 +158,9 @@ if (car_lane == lane) {
 
 ### Behavior
 
-The basic strategy with choosing the above parameters is to make sure there is adequate room in either the left or right lane to pass the car ahead of me. This allows the car to more intelligently chose whether to pass on the left or right.
+The basic strategy with choosing the above parameters is to make sure there is adequate room in either the left or right lane to pass the car ahead of me. This allows my car to more intelligently chose whether to pass on the left or right.
 
-Also, the model is quite aggressive in that it allows my car to cut in front of other cars even if they're only 5m behind me. If you watch [the video](https://youtu.be/3QYBQGf2RrE?t=53s), you can see how this allows my car to navigate through tight spaces and avoid getting stuck in traffic. However, there is a safety risk. My car is more likely to cut-off another car and cause it to collide with me from behind. In real life this would be a huge concern and you'd want to set the `gap_behind` value higher. But in this simulation I found the risk of getting rear-ended was quite rare, so I kept this parameter at 5m.
+Also, the model is quite aggressive in that it allows my car to cut in front of other cars even if they're only 5m behind me. If you watch [the video](https://youtu.be/3QYBQGf2RrE?t=53s), you can see how this allows my car to navigate through tight spaces and avoid getting stuck in traffic. However, there is a safety risk. My car is more likely to cut in front of another car and cause a collision from behind. In real life this would be a huge concern and you'd want to set the `gap_behind` value higher. But in this simulation I found the risk of getting rear-ended was quite rare, so I kept this parameter at 5m.
 
 Now equipped with the positions of the other cars, I can model my car's behavior according to the above strategy ([line 302](https://github.com/tommytracey/Udacity-CarND-Term3/blob/master/p11-path-planning/src/main.cpp#L302)):
 
@@ -203,11 +203,11 @@ if (car_ahead) {
 The final task is to calculate an optimal trajectory based on the car's lane target, speed, coordinates, and most recent path points.
 
 Here are the basic steps:
-1. Transform the waypoints from track coordinates into the vehicle space.
-1. Repurpose the last two points of the previous trajectory. If there isn't a previous trajectory then we use the car's most recent position in conjunction three distant points
+1. Transform the waypoints from map coordinates (x,y) into the vehicle space (s,d).
+1. Repurpose the last two points of the previous trajectory. If there isn't a previous trajectory then we use the car's most recent position in conjunction three distant points.
 1. Initialize the spline calculation. To simplify the math, the coordinates are transformed (shift and rotation) to local car coordinates.
 1. Previous trajectory points are copied to the new trajectory to  maintain continuity.
-1. The remaining trajectory points are calculated by evaluating the spline and then transforming the output coordinates back to local coordinates
+1. The remaining trajectory points are calculated by evaluating the spline and then transforming the output coordinates back to map coordinates.
 
 You can view the code for this sequence of steps starting at [line 333 of main.cpp](https://github.com/tommytracey/Udacity-CarND-Term3/blob/master/p11-path-planning/src/main.cpp#L333).
 
@@ -216,7 +216,7 @@ You can view the code for this sequence of steps starting at [line 333 of main.c
 ### Future Improvements
 Ultimately, this is a simplistic approach that works well in a simulated driving environment that isn't terribly dynamic. Trying to extend this path planner to a more stochastic environment (such as an urban setting) would require many improvements.
 * Finite state machine that accommodates greater complexity with a more comprehensive set of driving actions and states.
-* Cost functions that reward/penalize a broader set of environment variables in order to determine the optimal path.
+* Cost functions that reward/penalize a broader set of environment variables in order to determine the optimal path (e.g. the relative speed of an vehicle approaching in the next lane prior to a lane change).
 * Localization of other objects (not just cars) using sensor fusion.
 
 ##### &nbsp;

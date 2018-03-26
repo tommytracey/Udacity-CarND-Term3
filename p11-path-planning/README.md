@@ -196,6 +196,7 @@ if (car_ahead) {
   }
 }
 ```
+Notice that the above code also includes logic that moves the car back into the center lane whenever it's safe to do so ([line 320](https://github.com/tommytracey/Udacity-CarND-Term3/blob/master/p11-path-planning/src/main.cpp#L320)). Doing this helps prevent the car from getting pinned in the right or left lane, and therefore creates more opportunities to pass slower cars ahead.
 
 ##### &nbsp;
 
@@ -218,6 +219,7 @@ Ultimately, this is a simplistic approach that works well in a simulated driving
 * Finite state machine that accommodates greater complexity with a more comprehensive set of driving actions and states.
 * Cost functions that reward/penalize a broader set of environment variables in order to determine the optimal path (e.g. the relative speed of an vehicle approaching in the next lane prior to a lane change).
 * Localization of other objects (not just cars) using sensor fusion.
+* (for highway driving) A prediction and behavior model that looks for opportunities to pass by evaluating car positions two lanes over (not just in the adjacent lane).
 
 ##### &nbsp;
 

@@ -1,9 +1,11 @@
-import os.path
-import tensorflow as tf
 import helper
-import warnings
 from distutils.version import LooseVersion
+import os.path
 import project_tests as tests
+import tensorflow as tf
+import time
+from datetime import timedelta
+import warnings
 
 
 # Check TensorFlow Version
@@ -15,6 +17,21 @@ if not tf.test.gpu_device_name():
     warnings.warn('No GPU found. Please use a GPU to train your neural network.')
 else:
     print('Default GPU Device: {}'.format(tf.test.gpu_device_name()))
+
+
+# Set parameters
+L2_REG = 1e-6
+STDEV = 1e-3
+KEEP_PROB = 0.5
+LEARNING_RATE = 1e-4
+EPOCHS = 10
+BATCH_SIZE = 8
+IMAGE_SHAPE = (256, 512)
+NUM_CLASSES = 3
+
+DATA_DIR = './data'
+RUNS_DIR = './runs'
+MODEL_DIR = './models'
 
 
 def load_vgg(sess, vgg_path):
@@ -33,7 +50,16 @@ def load_vgg(sess, vgg_path):
     vgg_layer4_out_tensor_name = 'layer4_out:0'
     vgg_layer7_out_tensor_name = 'layer7_out:0'
 
-    return None, None, None, None, None
+    graph = tf.get_default_graph()
+    tf.saved_model.loader.load(sess, [vgg_tag], vgg_path)
+    input = graph.get_tensor_by_name(vgg_input_tensor_name)
+    keep_prob = graph.get_tensor_by_name(vgg_keep_prob_tensor_name)
+    layer3 = graph.get_tensor_by_name(vgg_layer3_out_tensor_name)
+    layer4 = graph.get_tensor_by_name(vgg_layer4_out_tensor_name)
+    layer7 = graph.get_tensor_by_name(vgg_layer7_out_tensor_name)
+    return input, keep_prob, layer3, layer4, layer7
+
+print("Load VGG Model:\")
 tests.test_load_vgg(load_vgg, tf)
 
 
@@ -98,7 +124,7 @@ def run():
     # OPTIONAL: Train and Inference on the cityscapes dataset instead of the Kitti dataset.
     # You'll need a GPU with at least 10 teraFLOPS to train on.
     #  https://www.cityscapes-dataset.com/
-    
+
 
     with tf.Session() as sess:
         # Path to vgg model

@@ -198,23 +198,23 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     counter = 1
     for epoch in range(epochs):
         start_time = time.time()
-        for image, correct_label in get_batches_fn(batch_size):
+        for image, label in get_batches_fn(batch_size):
             if counter % 5 == 0:
                 # Run optimizer and merge TB summary
                 # TODO: to activate TB, add "s" variable after loss
                 _, loss = sess.run([train_op, cross_entropy_loss], #, summary],
                                    feed_dict={input_image: image,
-                                              correct_label: correct_label,
-                                              keep_prob: KEEP_PROB,
-                                              learning_rate: LEARNING_RATE})
+                                              correct_label: label,
+                                              keep_prob: keep_prob,
+                                              learning_rate: learning_rate})
                 # writer.add_summary(s, counter)
             # Run optimizer without TB summary
             else:
                 _, loss = sess.run([train_op, cross_entropy_loss],
                                       feed_dict={input_image: image,
-                                                 correct_label: correct_label,
-                                                 keep_prob: KEEP_PROB,
-                                                 learning_rate: LEARNING_RATE})
+                                                 correct_label: label,
+                                                 keep_prob: keep_prob,
+                                                 learning_rate: learning_rate})
             counter += 1
         # Print data on the learning process
         print("Epoch: {}".format(epoch+1), " / {}".format(EPOCHS), " Loss: {:.3f}".format(loss), " Time: ",
@@ -261,7 +261,7 @@ def run():
         sess.run(tf.global_variables_initializer())
         saver = tf.train.Saver()
         train_nn(sess, EPOCHS, BATCH_SIZE, get_batches_fn, train_op, cross_entropy_loss, input_image,
-             correct_label, keep_prob, learning_rate, saver, MODEL_DIR)
+             correct_label, KEEP_PROB, LEARNING_RATE, saver, MODEL_DIR)
 
         # Save inference data using helper.save_inference_samples
         helper.save_inference_samples(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input_image, NUM_CLASSES)

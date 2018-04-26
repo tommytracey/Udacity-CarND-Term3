@@ -202,7 +202,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
             if counter % 5 == 0:
                 # Run optimizer and merge TB summary
                 # TODO: to activate TB, add "s" variable after loss
-                _, loss = sess.run([train_op, cross_entropy_loss] #, summary],
+                _, loss = sess.run([train_op, cross_entropy_loss], #, summary],
                                    feed_dict={input_image: image,
                                               correct_label: correct_label,
                                               keep_prob: KEEP_PROB,

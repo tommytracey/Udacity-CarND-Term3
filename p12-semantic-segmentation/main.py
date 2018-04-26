@@ -54,10 +54,10 @@ def load_vgg(sess, vgg_path):
     tf.saved_model.loader.load(sess, [vgg_tag], vgg_path)
     input = graph.get_tensor_by_name(vgg_input_tensor_name)
     keep_prob = graph.get_tensor_by_name(vgg_keep_prob_tensor_name)
-    layer3 = graph.get_tensor_by_name(vgg_layer3_out_tensor_name)
-    layer4 = graph.get_tensor_by_name(vgg_layer4_out_tensor_name)
-    layer7 = graph.get_tensor_by_name(vgg_layer7_out_tensor_name)
-    return input, keep_prob, layer3, layer4, layer7
+    layer3_out = graph.get_tensor_by_name(vgg_layer3_out_tensor_name)
+    layer4_out = graph.get_tensor_by_name(vgg_layer4_out_tensor_name)
+    layer7_out = graph.get_tensor_by_name(vgg_layer7_out_tensor_name)
+    return input, keep_prob, layer3_out, layer4_out, layer7_out
 
 print("Load VGG Model:\")
 tests.test_load_vgg(load_vgg, tf)
@@ -73,7 +73,81 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :return: The Tensor for the last layer of output
     """
     # TODO: Implement function
-    return None
+
+    ## Encoder
+
+    # Set initialization and regularization methods
+    init = tf.truncated_normal_initializer(stddev=STDEV)
+    reg = tf.contrib.layers.l2_regularizer(L2_REG)
+
+    # 1x1 convolutional layers on l3, l4, and l7 outputs
+    conv_l3 = tf.layers.conv2d(
+        vgg_layer3_out,
+        num_classes,
+        kernel_size=1,
+        strides=1,
+        padding='same',
+        kernel_initializer=init,
+        kernel_regularizer=reg
+    )
+    conv_l4 = tf.layers.conv2d(
+        vgg_layer4_out,
+        num_classes,
+        kernel_size=1,
+        strides=1,
+        padding='same',
+        kernel_initializer=init,
+        kernel_regularizer=reg
+    )
+    conv_l7 = tf.layers.conv2d(
+        vgg_layer7_out,
+        num_classes,
+        kernel_size=1,
+        strides=1,
+        padding='same',
+        kernel_initializer=init,
+        kernel_regularizer=reg
+    )
+
+    ## Decoder
+
+    # upsample encoder output by 2
+    deconv_1 = tf.layers.conv2d_transpose(
+        conv_l7,
+        num_classes,
+        kernel_size=4,
+        strides=2,
+        padding='same',
+        kernel_initializer=init,
+        kernel_regularizer=reg
+    )
+    # skip connection from layer 4
+    deconv_1 = tf.add(deconv_1, conv_l4)
+
+    # upsample by 2 again
+    deconv_2 = tf.layers.conv2d_transpose(
+        deconv_1,
+        num_classes,
+        kernel_size=4,
+        strides=2,
+        padding='same',
+        kernel_initializer=init,
+        kernel_regularizer=reg
+    )
+    # skip connection from layer 3
+    deconv_2 = tf.add(deconv_2, conv_l3)
+
+    # upsample by 8 to return to original image size
+    deconv_3 = tf.layers.conv2d_transpose(
+        deconv_2,
+        num_classes,
+        kernel_size=16,
+        strides=8,
+        padding='same',
+        kernel_initializer=init,
+        kernel_regularizer=reg
+    )
+    return deconv_3
 tests.test_layers(layers)
 
 

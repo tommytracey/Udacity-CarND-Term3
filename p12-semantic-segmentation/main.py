@@ -325,5 +325,7 @@ if __name__ == '__main__':
 
     if args.action == 'predict':
         predict()
-    else:
+    elif args.action == 'train':
         run()
+    else:
+        print('Error: Please provide an action.\r')

@@ -59,7 +59,7 @@ def load_vgg(sess, vgg_path):
     layer7_out = graph.get_tensor_by_name(vgg_layer7_out_tensor_name)
     return input, keep_prob, layer3_out, layer4_out, layer7_out
 
-print("Load VGG Model:\")
+print("Load VGG Model:\r")
 tests.test_load_vgg(load_vgg, tf)
 
 
@@ -80,7 +80,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     init = tf.truncated_normal_initializer(stddev=STDEV)
     reg = tf.contrib.layers.l2_regularizer(L2_REG)
 
-    # 1x1 convolutional layers on l3, l4, and l7 outputs
+    # 1x1 convolutional layers on vgg l3, l4, and l7 outputs
     conv_l3 = tf.layers.conv2d(
         vgg_layer3_out,
         num_classes,
@@ -121,7 +121,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
         kernel_initializer=init,
         kernel_regularizer=reg
     )
-    # skip connection from layer 4
+    # skip connection from vgg layer 4
     deconv_1 = tf.add(deconv_1, conv_l4)
 
     # upsample by 2 again
@@ -134,10 +134,10 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
         kernel_initializer=init,
         kernel_regularizer=reg
     )
-    # skip connection from layer 3
+    # skip connection from vgg layer 3
     deconv_2 = tf.add(deconv_2, conv_l3)
 
-    # upsample by 8 to return to original image size
+    # nn_last_layer - upsample by 8 to return to original input image size
     deconv_3 = tf.layers.conv2d_transpose(
         deconv_2,
         num_classes,
@@ -148,6 +148,8 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
         kernel_regularizer=reg
     )
     return deconv_3
+
+print("Layers Test:\r")
 tests.test_layers(layers)
 
 
@@ -161,7 +163,13 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     :return: Tuple of (logits, train_op, cross_entropy_loss)
     """
     # TODO: Implement function
-    return None, None, None
+    logits = tf.reshape(nn_last_layer, (-1, num_classes))
+    correct_label = tf.reshape(correct_label, (-1, num_classes))
+    cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=correct_label))
+    train_op = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy_loss)
+    return logits, train_op, cross_entropy_loss
+
+print("Optimize Test:\r")
 tests.test_optimize(optimize)
 
 

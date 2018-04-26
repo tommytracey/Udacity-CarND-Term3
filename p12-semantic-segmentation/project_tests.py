@@ -125,6 +125,8 @@ def test_train_nn(train_nn):
     correct_label = tf.placeholder(tf.float32, name='correct_label')
     keep_prob = tf.placeholder(tf.float32, name='keep_prob')
     learning_rate = tf.placeholder(tf.float32, name='learning_rate')
+    saver = tf.train.Saver()
+    model_dir = './models'
     with tf.Session() as sess:
         parameters = {
             'sess': sess,

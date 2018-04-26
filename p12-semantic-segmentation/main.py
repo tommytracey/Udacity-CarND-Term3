@@ -1,3 +1,4 @@
+import argparse
 import helper
 from distutils.version import LooseVersion
 import os.path
@@ -220,7 +221,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
               str(timedelta(seconds=(time.time()-start_time))))
         # Save checkpoint every N epochs
         if (epoch + 1) % 5 == 0:
-            save_path = saver.save(sess, os.path.join(DATA_DIR, 'cfn_epoch_' + str(epoch) + '.ckpt'))
+            save_path = saver.save(sess, os.path.join(model_dir, 'cfn_epoch_' + str(epoch) + '.ckpt'))
 
 print("NN Train Test:")
 tests.test_train_nn(train_nn)
@@ -263,10 +264,66 @@ def run():
              correct_label, keep_prob, learning_rate, saver, MODEL_DIR)
 
         # Save inference data using helper.save_inference_samples
-        helper.save_inference_samples(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input_image, NUM_CLASSES)
+        helper.save_inference_samples(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input_image)
 
         # OPTIONAL: Apply the trained model to a video
 
+def predict():
+    with tf.Session() as sess:
+        # Path to vgg model
+        vgg_path = os.path.join(DATA_DIR, 'vgg')
+        # Create function to get batches
+        get_batches_fn = helper.gen_batch_function(os.path.join(DATA_DIR, 'data_road/training'), IMAGE_SHAPE)
+
+        # Variable placeholders
+        correct_label = tf.placeholder(tf.int32, [None, IMAGE_SHAPE[0], IMAGE_SHAPE[1], NUM_CLASSES], name='correct_label')
+        learning_rate = tf.placeholder(tf.float32, [], name='learning_rate')
+
+        # Build NN using load_vgg, layers, and optimize function
+        input_image, keep_prob, vgg_layer3_out, vgg_layer4_out, vgg_layer7_out = load_vgg(sess, vgg_path)
+        nn_last_layer = layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, NUM_CLASSES)
+        logits, train_op, cross_entropy_loss = optimize(nn_last_layer, correct_label, learning_rate, NUM_CLASSES)
+
+        # Restore model from checkpoint
+        tf.set_random_seed(47)
+        sess.run(tf.global_variables_initializer())
+        new_saver = tf.train.import_meta_graph('./models/cfn_epoch_9.ckpt.meta')
+        new_saver.restore(sess, tf.train.latest_checkpoint(MODEL_DIR))
+
+        # Save inference data using helper.save_inference_samples
+        helper.save_inference_samples(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input)
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('action',
+                        help='what to do: train/predict/freeze/optimise/video',
+                        type=str,
+                        choices=['train','predict', 'freeze', 'optimise', 'video'])
+    # parser.add_argument('-g', '--gpu', help='number of GPUs to use. default 0 (use CPU)', type=int, default=0)
+    # parser.add_argument('-gm','--gpu_mem', help='GPU memory fraction to use. default 0.9', type=float, default=0.9)
+    # parser.add_argument('-x','--xla', help='XLA JIT level. default None', type=int, default=None, choices=[1,2])
+    # parser.add_argument('-ep', '--epochs', help='training epochs. default 0', type=int, default=0)
+    # parser.add_argument('-bs', '--batch_size', help='training batch size. default 5', type=int, default=5)
+    # parser.add_argument('-lr', '--learning_rate', help='training learning rate. default 0.0001', type=float, default=0.0001)
+    # parser.add_argument('-kp', '--keep_prob', help='training dropout keep probability. default 0.9', type=float, default=0.9)
+    # parser.add_argument('-rd', '--runs_dir', help='training runs directory. default runs', type=str, default='runs')
+    # parser.add_argument('-cd', '--ckpt_dir', help='training checkpoints directory. default ckpt', type=str, default='ckpt')
+    # parser.add_argument('-sd', '--summary_dir', help='training tensorboard summaries directory. default summaries', type=str, default='summaries')
+    # parser.add_argument('-md', '--model_dir', help='model directory. default None - model directory is created in runs. needed for predict', type=str, default=None)
+    # parser.add_argument('-fd', '--frozen_model_dir', help='model directory for frozen graph. for freeze', type=str, default=None)
+    # parser.add_argument('-od', '--optimised_model_dir', help='model directory for optimised graph. for optimize', type=str, default=None)
+    # parser.add_argument('-ip', '--images_paths', help="images path/file pattern. e.g. 'train/img*.png'", type=str, default=None)
+    # parser.add_argument('-lp', '--labels_paths', help="label images path/file pattern. e.g. 'train/label*.png'", type=str, default=None)
+    # parser.add_argument('-vi', '--video_file_in', help="mp4 video file to process", type=str, default=None)
+    # parser.add_argument('-vo', '--video_file_out', help="mp4 video file to save results", type=str, default=None)
+    args = parser.parse_args()
+    return args
 
 if __name__ == '__main__':
-    run()
+
+    args = parse_args()
+
+    if args.action == 'predict':
+        predict()
+    else:
+        run()

@@ -164,8 +164,8 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     """
     # TODO: Implement function
     logits = tf.reshape(nn_last_layer, (-1, num_classes))
-    correct_label = tf.reshape(correct_label, (-1, num_classes))
-    cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=correct_label))
+    labels = tf.reshape(correct_label, (-1, num_classes))
+    cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels))
     train_op = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy_loss)
     return logits, train_op, cross_entropy_loss
 
@@ -189,8 +189,41 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     :param learning_rate: TF Placeholder for learning rate
     """
     # TODO: Implement function
-    pass
-tests.test_train_nn(train_nn)
+
+    # TensorBoard integration
+    # summary = tf.summary.merge_all()
+    # writer = tf.summary.FileWriter(LOGDIR + hparam)
+    # writer.add_graph(sess.graph)
+
+    counter = 1
+    for epoch in range(epochs):
+        start_time = time.time()
+        for image, correct_label in get_batches_fn(batch_size):
+            if counter % 5 == 0:
+                # Run optimizer and merge TB summary
+                _, loss = sess.run([train_op, cross_entropy_loss] #, summary],
+                                   feed_dict={input_image: image,
+                                              correct_label: correct_label,
+                                              keep_prob: keep_prob,
+                                              learning_rate: learning_rate})
+                # writer.add_summary(s, counter)
+            # Run optimizer without TB summary
+            else:
+                _, loss = sess.run([train_op, cross_entropy_loss],
+                                      feed_dict={input_image: image,
+                                                 correct_label: correct_label,
+                                                 keep_prob: keep_prob,
+                                                 learning_rate: learning_rate})
+            counter += 1
+        # Print data on the learning process
+        print("Epoch: {}".format(epoch+1), " / {}".format(epochs), " Loss: {:.3f}".format(loss), " Time: ",
+              str(timedelta(seconds=(time.time() - start_time))))
+        # Save checkpoint every N epochs
+        if (epoch + 1) % 5 == 0:
+            save_path = saver.save(sess, os.path.join(data_dir, 'cfn_epoch_' + str(epoch) + '.ckpt'))
+
+# print("NN Train Test:")
+# tests.test_train_nn(train_nn)
 
 
 def run():

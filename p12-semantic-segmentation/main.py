@@ -21,11 +21,11 @@ else:
 
 
 # Set parameters
-L2_REG = 1e-6
+L2_REG = 1e-5
 STDEV = 1e-3
 KEEP_PROB = 0.5
 LEARNING_RATE = 1e-4
-EPOCHS = 10
+EPOCHS = 50
 BATCH_SIZE = 8
 IMAGE_SHAPE = (160, 576)  # (256, 512) for Cityscapes
 NUM_CLASSES = 2  # 50 for Cityscapes
@@ -217,10 +217,10 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                                                  learning_rate: LEARNING_RATE})
             counter += 1
         # Print data on the learning process
-        print("Epoch: {}".format(epoch+1), " / {}".format(EPOCHS), " Loss: {:.3f}".format(loss), " Time: ",
+        print("Epoch: {}".format(epoch+1), "/ {}".format(EPOCHS), " Loss: {:.3f}".format(loss), " Time: ",
               str(timedelta(seconds=(time.time()-start_time))))
         # Save checkpoint every N epochs
-        if (epoch + 1) % 5 == 0:
+        if (epoch+1) % 5 == 0:
             save_path = saver.save(sess, os.path.join(model_dir, 'cfn_epoch_' + str(epoch) + '.ckpt'))
 
 print("NN Train Test:")

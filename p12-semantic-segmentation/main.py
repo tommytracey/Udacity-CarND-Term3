@@ -223,8 +223,8 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
         if (epoch + 1) % 5 == 0:
             save_path = saver.save(sess, os.path.join(DATA_DIR, 'cfn_epoch_' + str(epoch) + '.ckpt'))
 
-# print("NN Train Test:")
-# tests.test_train_nn(train_nn)
+print("NN Train Test:")
+tests.test_train_nn(train_nn)
 
 
 def run():

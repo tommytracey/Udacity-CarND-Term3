@@ -26,6 +26,7 @@
 
 **/mac_sim.app
 !**/models/gold
+**.pem
 **/test_models
 **/reading
 **/research

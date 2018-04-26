@@ -291,14 +291,14 @@ def predict():
         new_saver.restore(sess, tf.train.latest_checkpoint(MODEL_DIR))
 
         # Save inference data using helper.save_inference_samples
-        helper.save_inference_samples(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input)
+        helper.save_inference_samples(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input_image)
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('action',
                         help='what to do: train/predict/freeze/optimise/video',
                         type=str,
-                        choices=['train','predict', 'freeze', 'optimise', 'video'])
+                        choices=['train', 'predict', 'freeze', 'optimise', 'video'])
     # parser.add_argument('-g', '--gpu', help='number of GPUs to use. default 0 (use CPU)', type=int, default=0)
     # parser.add_argument('-gm','--gpu_mem', help='GPU memory fraction to use. default 0.9', type=float, default=0.9)
     # parser.add_argument('-x','--xla', help='XLA JIT level. default None', type=int, default=None, choices=[1,2])

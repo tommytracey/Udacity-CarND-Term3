@@ -139,8 +139,8 @@ def test_train_nn(train_nn):
             'correct_label': correct_label,
             'keep_prob': keep_prob,
             'learning_rate': learning_rate,
-            'saver',
-            'model_dir',
+            'saver':,
+            'model_dir':,
             }
         _prevent_print(train_nn, parameters)
 

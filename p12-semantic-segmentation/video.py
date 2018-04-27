@@ -1,3 +1,5 @@
+import moviepy.editor as mpy
+
 # Create video from image predictions
 print('Creating video clip...')
 clip = mpy.ImageSequenceClip('runs/1524868008.9052386', fps=15)

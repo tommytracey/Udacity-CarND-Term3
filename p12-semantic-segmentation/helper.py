@@ -159,7 +159,7 @@ def save_video(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_i
     # Create video from image predictions
     print('Creating video clip...')
     clip = mpy.ImageSequenceClip(output_dir, fps=15)
-    clip.write_videofile("video/video_out.mp4",fps=15, audio=False)
+    clip.write_videofile('video/video_out.mp4', fps=15, audio=False)
     print('Video clip completed.')
 
 

@@ -289,8 +289,8 @@ def resume():
         logits, train_op, cross_entropy_loss = optimize(nn_last_layer, correct_label, learning_rate, NUM_CLASSES)
 
         # Restore model from checkpoint
-        tf.set_random_seed(47)
-        sess.run(tf.global_variables_initializer())
+        # tf.set_random_seed(47)
+        # sess.run(tf.global_variables_initializer())
         new_saver = tf.train.import_meta_graph(CHECKPOINT)
         new_saver.restore(sess, tf.train.latest_checkpoint(MODEL_DIR))
 

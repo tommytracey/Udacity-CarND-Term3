@@ -1,15 +1,16 @@
-import re
-import random
+import argparse
+from glob import glob
 import numpy as np
 import os.path
+import random
+import re
 import scipy.misc
 import shutil
-import zipfile
 import time
 import tensorflow as tf
-from glob import glob
-from urllib.request import urlretrieve
 from tqdm import tqdm
+from urllib.request import urlretrieve
+import zipfile
 
 
 class DLProgress(tqdm):
@@ -138,3 +139,17 @@ def save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_p
         sess, logits, keep_prob, input_image, os.path.join(data_dir, 'data_road/testing'), image_shape)
     for name, image in image_outputs:
         scipy.misc.imsave(os.path.join(output_dir, name), image)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('action',
+                        help='what to do: train/resume/predict/video',
+                        type=str,
+                        choices=['train', 'predict', 'resume', 'video'])
+    parser.add_argument('-ep', '--epochs', help='training epochs. default 0', type=int, default=10)
+    parser.add_argument('-bs', '--batch_size', help='training batch size. default 5', type=int, default=8)
+    # parser.add_argument('-vi', '--video_file_in', help="mp4 video file to process", type=str, default=None)
+    # parser.add_argument('-vo', '--video_file_out', help="mp4 video file to save results", type=str, default=None)
+    args = parser.parse_args()
+    return args

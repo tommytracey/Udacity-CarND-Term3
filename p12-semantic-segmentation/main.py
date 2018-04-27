@@ -296,7 +296,7 @@ def resume():
         new_saver.restore(sess, tf.train.latest_checkpoint(MODEL_DIR))
 
         # Resume training
-        saver = tf.train.Saver()
+        # saver = tf.train.Saver()
         train_nn(sess, args.epochs, args.batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
              correct_label, keep_prob, learning_rate, saver, MODEL_DIR)
 

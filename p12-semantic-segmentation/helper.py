@@ -156,9 +156,9 @@ def save_video(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_i
     for name, image in image_outputs:
         scipy.misc.imsave(os.path.join(output_dir, name), image)
 
-    # Creat video from image predictions
+    # Create video from image predictions
     print('Creating video clip...')
-    clip = mpy.ImageSequenceClip(image_outputs, fps=15)
+    clip = mpy.ImageSequenceClip(output_dir, fps=15)
     my_clip.write_videofile("video/video_out.mp4",fps=15, audio=False)
     print('Video clip completed.')
 

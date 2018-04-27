@@ -269,6 +269,7 @@ def run():
 
 def resume():
     print("\nResume training...")
+    tf.reset_default_graph()
     with tf.Session() as sess:
         # Path to vgg model
         vgg_path = os.path.join(DATA_DIR, 'vgg')

@@ -364,6 +364,8 @@ if __name__ == '__main__':
 
     print("\naction={}".format(args.action))
 
+    if args.action == 'video':
+        video()
     if args.action == 'predict':
         predict()
     elif args.action == 'resume':

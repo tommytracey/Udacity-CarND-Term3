@@ -1,5 +1,6 @@
 import argparse
 from glob import glob
+import moviepy.editor as mpy
 import numpy as np
 import os.path
 import random
@@ -139,6 +140,27 @@ def save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_p
         sess, logits, keep_prob, input_image, os.path.join(data_dir, 'data_road/testing'), image_shape)
     for name, image in image_outputs:
         scipy.misc.imsave(os.path.join(output_dir, name), image)
+
+
+def save_video(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image):
+    # Make folder for current run
+    output_dir = os.path.join(runs_dir, str(time.time()))
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
+    os.makedirs(output_dir)
+
+    # Run NN on training images and save them to HD
+    print('\nSaving images to: {}'.format(output_dir))
+    image_outputs = gen_test_output(
+        sess, logits, keep_prob, input_image, os.path.join(data_dir, 'data_road/training'), image_shape)
+    for name, image in image_outputs:
+        scipy.misc.imsave(os.path.join(output_dir, name), image)
+
+    # Creat video from image predictions
+    print('Creating video clip...')
+    clip = mpy.ImageSequenceClip(image_outputs, fps=15)
+    my_clip.write_videofile("video/video_out.mp4",fps=15, audio=False)
+    print('Video clip completed.')
 
 
 def parse_args():

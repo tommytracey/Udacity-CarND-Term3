@@ -332,6 +332,32 @@ def predict():
 
 
 # OPTIONAL: Apply the trained model to a video
+def video():
+    print("\nMaking predictions...")
+    with tf.Session() as sess:
+        # Path to vgg model
+        vgg_path = os.path.join(DATA_DIR, 'vgg')
+
+        # Create function to get batches
+        get_batches_fn = helper.gen_batch_function(os.path.join(DATA_DIR, 'data_road/training'), IMAGE_SHAPE)
+
+        # Variable placeholders
+        correct_label = tf.placeholder(tf.int32, [None, IMAGE_SHAPE[0], IMAGE_SHAPE[1], NUM_CLASSES], name='correct_label')
+        learning_rate = tf.placeholder(tf.float32, [], name='learning_rate')
+
+        # Build NN using load_vgg, layers, and optimize function
+        input_image, keep_prob, vgg_layer3_out, vgg_layer4_out, vgg_layer7_out = load_vgg(sess, vgg_path)
+        nn_last_layer = layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, NUM_CLASSES)
+        logits, train_op, cross_entropy_loss = optimize(nn_last_layer, correct_label, learning_rate, NUM_CLASSES)
+
+        # Restore model from checkpoint
+        # tf.set_random_seed(47)
+        # sess.run(tf.global_variables_initializer())
+        new_saver = tf.train.import_meta_graph(CHECKPOINT)
+        new_saver.restore(sess, tf.train.latest_checkpoint(MODEL_DIR))
+
+        # Save inference data using helper.save_inference_samples
+        helper.save_video(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input_image)
 
 
 if __name__ == '__main__':

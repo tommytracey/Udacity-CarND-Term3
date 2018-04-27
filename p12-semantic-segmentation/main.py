@@ -188,12 +188,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     :param saver: TF method for saving checkpoints
     :param model_dir: directory where checkpoints are saved
     """
-
-    # TensorBoard integration
-    # summary = tf.summary.merge_all()
-    # writer = tf.summary.FileWriter(LOGDIR + hparam)
-    # writer.add_graph(sess.graph)
-
+    print("\nStart training...")
     counter = 1
     for epoch in range(epochs):
         start_time = time.time()
@@ -222,6 +217,8 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
         if (epoch+1) % 5 == 0:
             save_path = saver.save(sess, os.path.join(model_dir, 'cfn_epoch_' + str(epoch) + '.ckpt'))
 
+    print("\nTraining complete.")
+
 print("\nTrain NN Test:")
 tests.test_train_nn(train_nn)
 
@@ -236,7 +233,6 @@ def run():
     # You'll need a GPU with at least 10 teraFLOPS to train on.
     #  https://www.cityscapes-dataset.com/
 
-    print("\nStart training...")
     with tf.Session() as sess:
         # Path to vgg model
         vgg_path = os.path.join(DATA_DIR, 'vgg')
@@ -262,46 +258,6 @@ def run():
         saver = tf.train.Saver()
         train_nn(sess, args.epochs, args.batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
              correct_label, keep_prob, learning_rate, saver, MODEL_DIR)
-
-        # Save inference data using helper.save_inference_samples
-        # helper.save_inference_samples(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input_image)
-
-
-def resume():
-    print("\nResume training...")
-    tf.reset_default_graph()
-    with tf.Session() as sess:
-        # Path to vgg model
-        vgg_path = os.path.join(DATA_DIR, 'vgg')
-
-        # Create function to get batches
-        get_batches_fn = helper.gen_batch_function(os.path.join(DATA_DIR, 'data_road/training'), IMAGE_SHAPE)
-
-        # OPTIONAL: Augment Images for better results
-        #  https://datascience.stackexchange.com/questions/5224/how-to-prepare-augment-images-for-neural-network
-
-        # Variable placeholders
-        correct_label = tf.placeholder(tf.int32, [None, IMAGE_SHAPE[0], IMAGE_SHAPE[1], NUM_CLASSES], name='correct_label')
-        learning_rate = tf.placeholder(tf.float32, [], name='learning_rate')
-
-        # Build NN using load_vgg, layers, and optimize function
-        input_image, keep_prob, vgg_layer3_out, vgg_layer4_out, vgg_layer7_out = load_vgg(sess, vgg_path)
-        nn_last_layer = layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, NUM_CLASSES)
-        logits, train_op, cross_entropy_loss = optimize(nn_last_layer, correct_label, learning_rate, NUM_CLASSES)
-
-        # Restore model from checkpoint
-        tf.set_random_seed(47)
-        sess.run(tf.global_variables_initializer())
-        model = tf.train.import_meta_graph(CHECKPOINT)
-        model.restore(sess, tf.train.latest_checkpoint(MODEL_DIR))
-
-        # Resume training
-        saver = tf.train.Saver()
-        train_nn(sess, args.epochs, args.batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
-             correct_label, keep_prob, learning_rate, saver, MODEL_DIR)
-
-        # Save inference data using helper.save_inference_samples
-        # helper.save_inference_samples(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input_image)
 
 
 def predict():
@@ -367,19 +323,8 @@ if __name__ == '__main__':
 
     if args.action == 'video':
         video()
-    if args.action == 'predict':
+    elif args.action == 'predict':
         predict()
-    elif args.action == 'resume':
-        print('--parameters--')
-        print('epochs={}'.format(args.epochs))
-        print('batch_size={}'.format(args.batch_size))
-        print('num_classes={}'.format(NUM_CLASSES))
-        print('image_shape={}'.format(IMAGE_SHAPE))
-        print('learning_rate={}'.format(LEARNING_RATE))
-        print('l2_reg={}'.format(L2_REG))
-        print('stdev={}'.format(STDEV))
-        print('keep_prob={}\n'.format(KEEP_PROB))
-        resume()
     elif args.action == 'train':
         print('--parameters--')
         print('epochs={}'.format(args.epochs))

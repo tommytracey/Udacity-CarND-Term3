@@ -166,12 +166,10 @@ def save_video(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_i
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('action',
-                        help='what to do: train/resume/predict/video',
+                        help='what to do: train/predict/video',
                         type=str,
-                        choices=['train', 'predict', 'resume', 'video'])
+                        choices=['train', 'predict', 'video'])
     parser.add_argument('-ep', '--epochs', help='training epochs. default 0', type=int, default=10)
     parser.add_argument('-bs', '--batch_size', help='training batch size. default 5', type=int, default=8)
-    # parser.add_argument('-vi', '--video_file_in', help="mp4 video file to process", type=str, default=None)
-    # parser.add_argument('-vo', '--video_file_out', help="mp4 video file to save results", type=str, default=None)
     args = parser.parse_args()
     return args

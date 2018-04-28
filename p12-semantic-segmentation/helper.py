@@ -141,34 +141,19 @@ def save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_p
     for name, image in image_outputs:
         scipy.misc.imsave(os.path.join(output_dir, name), image)
 
-
-def save_video(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image):
-    # Make folder for current run
-    output_dir = os.path.join(runs_dir, str(time.time()))
-    if os.path.exists(output_dir):
-        shutil.rmtree(output_dir)
-    os.makedirs(output_dir)
-
-    # Run NN on training images and save them to HD
-    print('\nSaving images to: {}'.format(output_dir))
-    image_outputs = gen_test_output(
-        sess, logits, keep_prob, input_image, os.path.join(data_dir, 'data_road/training'), image_shape)
-    for name, image in image_outputs:
-        scipy.misc.imsave(os.path.join(output_dir, name), image)
-
-    # Create video from image predictions
-    print('Creating video clip...')
-    clip = mpy.ImageSequenceClip(output_dir, fps=15)
-    clip.write_videofile('video/video_out.mp4', fps=15, audio=False)
-    print('Video clip completed.')
+    # # Create video from image predictions
+    # print('Creating video clip...')
+    # clip = mpy.ImageSequenceClip(output_dir, fps=25)
+    # clip.write_videofile('video/video_out.mp4', fps=25, audio=False)
+    # print('Video clip completed.')
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('action',
-                        help='what to do: train/predict/video',
+                        help='what to do: train or predict',
                         type=str,
-                        choices=['train', 'predict', 'video'])
+                        choices=['train', 'predict'])
     parser.add_argument('-ep', '--epochs', help='training epochs. default 0', type=int, default=10)
     parser.add_argument('-bs', '--batch_size', help='training batch size. default 5', type=int, default=8)
     args = parser.parse_args()

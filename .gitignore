@@ -25,6 +25,7 @@
 **/video
 
 **/mac_sim.app
+**/models
 !**/models/gold
 **.pem
 **/test_models

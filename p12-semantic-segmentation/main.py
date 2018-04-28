@@ -262,7 +262,6 @@ def run():
              correct_label, keep_prob, learning_rate, saver, MODEL_DIR)
 
         # Save inference data using helper.save_inference_samples
-        save_path = saver.save(sess, os.path.join(model_dir, 'cfn_epoch_' + str(epoch) + '.ckpt'))
         helper.save_inference_samples(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input_image)
 
 

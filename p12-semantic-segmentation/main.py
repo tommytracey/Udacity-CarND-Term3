@@ -31,7 +31,7 @@ KEEP_PROB = 0.5
 DATA_DIR = './data'
 RUNS_DIR = './runs'
 MODEL_DIR = './models'
-CHECKPOINT = './models/cfn_epoch_9.ckpt.meta'
+CHECKPOINT = './models/cfn_epoch_49.ckpt.meta'
 
 
 def load_vgg(sess, vgg_path):

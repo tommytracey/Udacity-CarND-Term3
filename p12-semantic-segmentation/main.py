@@ -214,10 +214,9 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
         print("Epoch: {}".format(epoch+1), "/ {}".format(args.epochs), " Loss: {:.3f}".format(loss), " Time: ",
               str(timedelta(seconds=(time.time()-start_time))))
 
-        # Save checkpoint and inference samples every N epochs
+        # Save checkpoint every N epochs
         if (epoch+1) % 10 == 0:
             save_path = saver.save(sess, os.path.join(model_dir, 'cfn_epoch_' + str(epoch) + '.ckpt'))
-            helper.save_inference_samples(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input_image)
 
     print("\nTraining complete.")
 
@@ -264,7 +263,7 @@ def run():
 
         # Save inference data using helper.save_inference_samples
         save_path = saver.save(sess, os.path.join(model_dir, 'cfn_epoch_' + str(epoch) + '.ckpt'))
-        helper.save_video(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input_image)
+        helper.save_inference_samples(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input_image)
 
 
 def predict():

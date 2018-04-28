@@ -31,7 +31,7 @@ KEEP_PROB = 0.5
 DATA_DIR = './data'
 RUNS_DIR = './runs'
 MODEL_DIR = './models'
-CHECKPOINT = './models/cfn_epoch_49.ckpt.meta'
+# CHECKPOINT = './models/cfn_epoch_49.ckpt.meta'
 
 
 def load_vgg(sess, vgg_path):
@@ -280,9 +280,9 @@ def predict():
 
         # Restore model from checkpoint
         # tf.set_random_seed(47)
-        # sess.run(tf.global_variables_initializer())
-        new_saver = tf.train.import_meta_graph(CHECKPOINT)
-        new_saver.restore(sess, tf.train.latest_checkpoint(MODEL_DIR))
+        sess.run(tf.global_variables_initializer())
+        new_saver = tf.train.import_meta_graph('./models/cfn_epoch_49.ckpt.meta')
+        new_saver.restore(sess, tf.train.latest_checkpoint('./models/'))
 
         # Save inference data using helper.save_inference_samples
         helper.save_inference_samples(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input_image)

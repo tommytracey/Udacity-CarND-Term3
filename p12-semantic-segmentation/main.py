@@ -213,9 +213,11 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
         # Print data on the learning process
         print("Epoch: {}".format(epoch+1), "/ {}".format(args.epochs), " Loss: {:.3f}".format(loss), " Time: ",
               str(timedelta(seconds=(time.time()-start_time))))
-        # Save checkpoint every N epochs
-        if (epoch+1) % 5 == 0:
+
+        # Save checkpoint and inference samples every N epochs
+        if (epoch+1) % 10 == 0:
             save_path = saver.save(sess, os.path.join(model_dir, 'cfn_epoch_' + str(epoch) + '.ckpt'))
+            helper.save_inference_samples(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input_image)
 
     print("\nTraining complete.")
 
@@ -232,7 +234,7 @@ def run():
     # OPTIONAL: Train and Inference on the cityscapes dataset instead of the Kitti dataset.
     # You'll need a GPU with at least 10 teraFLOPS to train on.
     #  https://www.cityscapes-dataset.com/
-    
+
     tf.reset_default_graph()
     with tf.Session() as sess:
         # Path to vgg model
@@ -261,7 +263,8 @@ def run():
              correct_label, keep_prob, learning_rate, saver, MODEL_DIR)
 
         # Save inference data using helper.save_inference_samples
-        helper.save_inference_samples(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input_image)
+        save_path = saver.save(sess, os.path.join(model_dir, 'cfn_epoch_' + str(epoch) + '.ckpt'))
+        helper.save_video(RUNS_DIR, DATA_DIR, sess, IMAGE_SHAPE, logits, keep_prob, input_image)
 
 
 def predict():

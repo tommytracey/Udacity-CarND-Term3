@@ -8,19 +8,22 @@
 
 ##### &nbsp;
 ## Goal & Approach
-The goal of this project is to identify the road within a series of driving images. To do this, we use an approach called semantic segmentation, which enables us to associate each pixel of an image with a class label. In the most simple case for this project, the two classes are 'road' and 'not road.' However, it's possible to classify a variety of different objects such as cars, pedestrians, trees, bicyclists, etc.
+The goal of this project is to identify the road within a series of driving images. To do this, we use an approach called semantic segmentation, which enables us to associate each pixel of an image with a class label. The two fundamental classes for this project are 'road' and 'not road.' However, with a more robust data set it's possible to classify a variety of different objects such as cars, pedestrians, buildings, trees, bicyclists, etc.
 
-For our semantic segmentation model we're required to build and train a Fully Convolutional Network (FCN), using [this research paper](https://people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf) from Berkeley as a guide.
+For our semantic segmentation model we need to build and train a Fully Convolutional Network (FCN), using [this research paper](https://people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf) from Berkeley as a guide.
 
-Below is a diagram of the model architecture. Notice that there are two skip layers which feed the output from layer 3 and layer 4 in the encoder into the second and third layer of the decoder. This helps preserve fidelity that is otherwise lost through subsequent convolutions during encoding.
+Below is a diagram of the model architecture. Notice there are two skip layers which feed the output from layer 3 and layer 4 in the encoder into the second and third layer of the decoder. This helps preserve fidelity that is otherwise lost through subsequent convolutions during encoding.
 
 <img src="results/fcn-architecture.png" width="75%" /></a>
 
 *Image credit: [PCA-aided Fully Convolutional Networks for Semantic Segmentation of Multi-channel fMRI](https://www.groundai.com/project/pca-aided-fully-convolutional-networks-for-semantic-segmentation-of-multi-channel-fmri/) by Lei Tai, Haoyang Ye, Qiong Ye, and Ming Liu*
 
-##### &nbsp;
-#### Data
-The model was trained using the [KITTI road detection data set](http://www.cvlibs.net/datasets/kitti/eval_road.php).
+### Data
+The initial model was trained using the [KITTI road detection data set](http://www.cvlibs.net/datasets/kitti/eval_road.php).
+
+In the future, I'd like to enhance the model and train it on a more robust data set such as [Cityscapes](https://www.cityscapes-dataset.com/). However, accessing this data requires explicit permission from their team.
+
+<img src="results/cityscapes-example.png" width="75%" /></a>
 
 
 ##### &nbsp;
@@ -42,14 +45,14 @@ Although far from perfect, I was able to get my model to recognize the road with
 ##### &nbsp;
 Here are the hyperparameters used during training
 
-<img src="results/params-kitti.png" width="60%" /></a>
+<img src="results/params-kitti.png" width="50%" /></a>
 
 ##### &nbsp;
 Here is the resulting cross-entropy loss.
 
 <img src="results/loss-graph-kitti.png" width="60%" /></a>
 
-<img src="results/loss-results-kitti.png" width="60%" /></a>
+<img src="results/loss-results-kitti.png" width="50%" /></a>
 
 
 
@@ -57,7 +60,7 @@ Here is the resulting cross-entropy loss.
 ### Future Improvements
 Ultimately, this is a simple approach that works well for this particular data set. Trying to extend this model for use on a self-driving car would require some improvements.
 * Train on more robust data set such as [Cityscapes](https://www.cityscapes-dataset.com/).
-* Add augmentation to generate more and more diverse training examples.
+* Add augmentation script to generate additional training examples and a greater variety of samples.
 * Freeze model to improve performance.
 * Add ability to take video as direct input.
 

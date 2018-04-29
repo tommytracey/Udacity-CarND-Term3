@@ -3,6 +3,7 @@
 # Term 3 / Project 12: Semantic Segmentation
 
 <a href=""><img src="results/ss-example-cows-cars.png" width="75%" /></a>
+
 *Image credit: [Brad Sliz blog](http://bradsliz.com/2017-11-06-object-segmentation/)*
 
 ##### &nbsp;
